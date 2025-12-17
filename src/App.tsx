@@ -313,7 +313,7 @@ return (
             style={{ height: 26, width: "auto" }}
           />
           <span style={{ fontWeight: 600, fontSize: 14 }}>
-            Radia Assistant
+            RadiAI
           </span>
         </div>
         <button
@@ -454,10 +454,10 @@ return (
           />
           <div>
             <h2 style={{ margin: 0, fontSize: 18 }}>
-              Radia SEI / Production Assistant
+              Radia SE&I AI Assistant
             </h2>
             <div style={{ fontSize: 12, opacity: 0.9 }}>
-              Answers from your prompt flow + AI Search. Internal use only.
+              Answers from your process documents + GPT 4.1. Internal use only.
             </div>
           </div>
         </div>
@@ -488,7 +488,7 @@ return (
                 background: m.role === "user" ? THEME_DARK : "#ffffff",
                 color: m.role === "user" ? "#ffffff" : "#000000",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
-                fontSize: 14,
+                fontSize: 11,
                 whiteSpace: "pre-wrap",
               }}
             >
@@ -498,8 +498,7 @@ return (
         ))}
         {messages.length === 0 && (
           <div style={{ color: "#555", fontSize: 14 }}>
-            Ask about production readiness, manufacturing plans, maturity gates,
-            Jama usage patterns, etc.
+            Ask me anything about Radia SE&I processes or let's create a training module.
           </div>
         )}
       </div>
