@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import logo from "./assets/radia-logo.png";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   id: string;
@@ -488,11 +490,57 @@ return (
                 background: m.role === "user" ? THEME_DARK : "#ffffff",
                 color: m.role === "user" ? "#ffffff" : "#000000",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
-                fontSize: 12,
-                whiteSpace: "pre-wrap",
+                fontSize: 14,
+                // Let markdown control layout for assistant, keep pre-wrap for user text
+                whiteSpace: m.role === "user" ? "pre-wrap" : "normal",
               }}
             >
-              {m.text}
+              {m.role === "assistant" ? (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ children }) => (
+                      <p style={{ margin: "0 0 6px 0" }}>{children}</p>
+                    ),
+                    ul: ({ children, ...props }) => (
+                      <ul
+                        style={{
+                          margin: "0 0 6px 1.2em",
+                          paddingLeft: "1.2em",
+                        }}
+                        {...props}
+                      >
+                        {children}
+                      </ul>
+                    ),
+                    ol: ({ children, ...props }) => (
+                      <ol
+                        style={{
+                          margin: "0 0 6px 1.2em",
+                          paddingLeft: "1.2em",
+                        }}
+                        {...props}
+                      >
+                        {children}
+                      </ol>
+                    ),
+                    h1: ({ children }) => (
+                      <h1 style={{ margin: "0 0 6px 0", fontSize: 18 }}>{children}</h1>
+                    ),
+                    h2: ({ children }) => (
+                      <h2 style={{ margin: "0 0 6px 0", fontSize: 16 }}>{children}</h2>
+                    ),
+                    h3: ({ children }) => (
+                      <h3 style={{ margin: "0 0 4px 0", fontSize: 15 }}>{children}</h3>
+                    ),
+                  }}
+                >
+                  {m.text}
+                </ReactMarkdown>
+              ) : (
+                // user messages: plain text, respect newlines
+                m.text
+              )}
             </div>
           </div>
         ))}
