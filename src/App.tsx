@@ -115,17 +115,18 @@ function App() {
   }, [sessions]);
 
   useEffect(() => {
-    try {
-      if (typeof window !== "undefined" && activeSession) {
-        window.localStorage.setItem(
-          "radiaChatActiveSessionId",
-          activeSession.id
-        );
-      }
-    } catch {
-      // ignore
+  try {
+    if (typeof window !== "undefined" && activeSession) {
+      window.localStorage.setItem(
+        "radiaChatActiveSessionId",
+        activeSession.id
+      );
     }
-  }, [activeSession?.id]);
+  } catch {
+    // ignore
+  }
+}, [activeSession]);
+
 
   const newChat = () => {
     const newSession: ChatSession = {
