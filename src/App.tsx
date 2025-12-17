@@ -6,6 +6,32 @@ interface Message {
   text: string;
 }
 
+interface ChatTurn {
+  inputs: { chat_input: string };
+  outputs: { chat_output: string };
+}
+
+function buildChatHistory(messages: Message[]): ChatTurn[] {
+  const history: ChatTurn[] = [];
+  let pendingUser: Message | null = null;
+
+  for (const m of messages) {
+    if (m.role === "user") {
+      // Start a new turn with this user message
+      pendingUser = m;
+    } else if (m.role === "assistant" && pendingUser) {
+      // Pair the last user message with this assistant reply
+      history.push({
+        inputs: { chat_input: pendingUser.text },
+        outputs: { chat_output: m.text },
+      });
+      pendingUser = null;
+    }
+  }
+
+  return history;
+}
+
 const API_URL = process.env.REACT_APP_API_URL ?? "";
 
 function stripCitations(raw: string): string {
@@ -29,6 +55,8 @@ function App() {
     const trimmed = input.trim();
     if (!trimmed || !API_URL) return;
 
+    const history = buildChatHistory(messages);
+
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: "user",
@@ -47,7 +75,7 @@ function App() {
         },
         body: JSON.stringify({
           input: trimmed,
-          chat_history: [], // we can wire real history later
+          chat_history: history,
         }),
       });
 
