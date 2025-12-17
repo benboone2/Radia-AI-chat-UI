@@ -148,6 +148,28 @@ function App() {
     setInput("");
   };
 
+  const renameSession = (id: string) => {
+    const current = sessions.find((s) => s.id === id);
+    const currentTitle = current?.title || "New chat";
+
+    const newTitle = window.prompt("Rename chat", currentTitle);
+    if (!newTitle) {
+      // If user cancels or clears the name, keep the old title
+      return;
+    }
+
+    setSessions((prev) =>
+      prev.map((s) =>
+        s.id === id
+          ? {
+              ...s,
+              title: newTitle.trim() || currentTitle,
+            }
+          : s
+      )
+    );
+  };
+
   const deleteSession = (id: string) => {
     setSessions((prev) => {
       // Don’t allow deleting the last remaining chat
@@ -365,7 +387,7 @@ return (
                   gap: 6,
                 }}
               >
-                {/* Clickable area to select chat */}
+                {/* Click area to select the chat */}
                 <div
                   onClick={() => setActiveSessionId(s.id)}
                   style={{
@@ -398,27 +420,50 @@ return (
                   </div>
                 </div>
 
-                {/* Delete button – only show if more than 1 chat exists */}
-                {sessions.length > 1 && (
+                {/* Action buttons: rename + delete */}
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  {/* Rename */}
                   <button
                     onClick={(e) => {
-                      e.stopPropagation(); // prevent selecting on delete click
-                      deleteSession(s.id);
+                      e.stopPropagation(); // don't change active chat on rename click
+                      renameSession(s.id);
                     }}
                     style={{
                       border: "none",
                       background: "transparent",
                       color: THEME_TEXT,
                       cursor: "pointer",
-                      fontSize: 14,
+                      fontSize: 13,
                       lineHeight: 1,
                       padding: "0 4px",
                     }}
-                    title="Delete chat"
+                    title="Rename chat"
                   >
-                    ×
+                    ✎
                   </button>
-                )}
+
+                  {/* Delete (only if more than one chat exists) */}
+                  {sessions.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // don't change active chat on delete click
+                        deleteSession(s.id);
+                      }}
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        color: THEME_TEXT,
+                        cursor: "pointer",
+                        fontSize: 14,
+                        lineHeight: 1,
+                        padding: "0 4px",
+                      }}
+                      title="Delete chat"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );
