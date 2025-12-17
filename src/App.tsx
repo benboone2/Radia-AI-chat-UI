@@ -55,9 +55,9 @@ function stripCitations(raw: string): string {
 }
 
 // Theme colors
-const THEME_BG = "rgb(193, 207, 220)"; // Radia branding color
+const THEME_BG = "#2B3F4D"; // Radia branding color
 const THEME_TEXT = "#ffffff"; // white text on theme backgrounds
-const THEME_DARK = "#23405a"; // darker accent for buttons / user bubble
+const THEME_DARK = "#515151"; // darker accent for buttons / user bubble
 
 function App() {
   // Sessions (multiple chats)
@@ -144,6 +144,28 @@ function App() {
     setSessions((prev) => [newSession, ...prev]);
     setActiveSessionId(newSession.id);
     setInput("");
+  };
+
+  const deleteSession = (id: string) => {
+    setSessions((prev) => {
+      // Don’t allow deleting the last remaining chat
+      if (prev.length <= 1) {
+        return prev;
+      }
+
+      const filtered = prev.filter((s) => s.id !== id);
+
+      // If we deleted the active session, move focus to the first remaining
+      if (id === activeSessionId) {
+        if (filtered.length > 0) {
+          setActiveSessionId(filtered[0].id);
+        } else {
+          setActiveSessionId(null);
+        }
+      }
+
+      return filtered;
+    });
   };
 
   const sendMessage = async () => {
@@ -253,230 +275,287 @@ function App() {
     }
   };
 
-  return (
+return (
+  <div
+    style={{
+      display: "flex",
+      height: "100vh",
+      fontFamily: "Segoe UI, system-ui, sans-serif",
+      background: THEME_BG,
+    }}
+  >
+    {/* LEFT SIDEBAR: chat list */}
     <div
       style={{
+        width: 260,
+        borderRight: "1px solid rgba(0,0,0,0.1)",
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
-        fontFamily: "FK Gretesk, FK Gretesk Medium, FK Gretesk black",
-        background: THEME_BG, // theme background
+        background: THEME_BG,
+        color: THEME_TEXT,
       }}
     >
-      {/* Sidebar: chat sessions */}
+      {/* Sidebar header with logo + New button */}
       <div
         style={{
-          width: 260,
-          borderRight: "1px solid #ddd",
+          padding: 8,
+          borderBottom: "1px solid rgba(255,255,255,0.4)",
           display: "flex",
-          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 8,
         }}
       >
-        <div
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <img
+            src={logo}
+            alt="Radia logo"
+            style={{ height: 26, width: "auto" }}
+          />
+          <span style={{ fontWeight: 600, fontSize: 14 }}>
+            Radia Assistant
+          </span>
+        </div>
+        <button
+          onClick={newChat}
           style={{
-            padding: 8,
-            borderBottom: "1px solid #ddd",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            border: "none",
+            borderRadius: 4,
+            padding: "4px 8px",
+            background: THEME_DARK,
+            color: "#fff",
+            fontSize: 12,
+            cursor: "pointer",
           }}
         >
-          <span style={{ fontWeight: 600, fontSize: 14 }}>Radia Assistant</span>
-          <button
-            onClick={newChat}
-            style={{
-              border: "none",
-              borderRadius: 4,
-              padding: "4px 8px",
-              background: "#0078d4",
-              color: "#fff",
-              fontSize: 12,
-              cursor: "pointer",
-            }}
-          >
-            + New
-          </button>
-        </div>
-
-        <div
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            padding: 4,
-            background: "#fafafa",
-          }}
-        >
-          {sessions.map((s) => {
-            const isActive = activeSession && activeSession.id === s.id;
-            return (
-              <div
-                key={s.id}
-                onClick={() => setActiveSessionId(s.id)}
-                style={{
-                  padding: "6px 8px",
-                  marginBottom: 4,
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  background: isActive ? "#e1f3ff" : "transparent",
-                  fontSize: 13,
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight: 500,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {s.title || "New chat"}
-                </div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: "#666",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {s.messages[0]?.text || "No messages yet"}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+          + New
+        </button>
       </div>
 
-      {/* Main chat pane */}
+      {/* Chat list */}
       <div
         style={{
           flex: 1,
-          display: "flex",
-          flexDirection: "column",
+          overflowY: "auto",
+          padding: 4,
         }}
       >
-        {/* Header */}
-        <div
-          style={{
-            padding: "8px 16px",
-            borderBottom: "1px solid rgba(0,0,0,0.1)",
-            background: THEME_BG,
-            color: THEME_TEXT,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <img
-              src={logo}
-              alt="Radia logo"
-              style={{ height: 30, width: "auto" }}
-            />
-            <div>
-              <h2 style={{ margin: 0, fontSize: 18 }}>
-                Radia SE&I Assistant
-              </h2>
-              <div style={{ fontSize: 12, opacity: 0.9 }}>
-                Answers from SE&I process docs. Internal use only.
-              </div>
-            </div>
-          </div>
-        </div>
+        {sessions.map((s) => {
+          const isActive = activeSession && activeSession.id === s.id;
+          const firstLine = s.messages[0]?.text || "No messages yet";
 
-        {/* Chat area */}
-        <div
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            padding: 16,
-            background: "#f5f7fb",
-          }}
-        >
-          {messages.map((m) => (
+          return (
             <div
-              key={m.id}
+              key={s.id}
               style={{
-                display: "flex",
-                justifyContent: m.role === "user" ? "flex-end" : "flex-start",
-                marginBottom: 8,
+                padding: 6,
+                marginBottom: 4,
+                borderRadius: 4,
+                background: isActive
+                  ? "rgba(35,64,90,0.3)"
+                  : "rgba(0,0,0,0.05)",
               }}
             >
               <div
                 style={{
-                  maxWidth: "70%",
-                  padding: 8,
-                  borderRadius: 8,
-                  background: m.role === "user" ? THEME_DARK : "#ffffff",
-                  color: m.role === "user" ? "#ffffff" : "#000000",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
-                  fontSize: 14,
-                  whiteSpace: "pre-wrap",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
                 }}
               >
-                {m.text}
+                {/* Clickable area to select chat */}
+                <div
+                  onClick={() => setActiveSessionId(s.id)}
+                  style={{
+                    flex: 1,
+                    cursor: "pointer",
+                    minWidth: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 500,
+                      fontSize: 13,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {s.title || "New chat"}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      opacity: 0.85,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {firstLine}
+                  </div>
+                </div>
+
+                {/* Delete button – only show if more than 1 chat exists */}
+                {sessions.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent selecting on delete click
+                      deleteSession(s.id);
+                    }}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      color: THEME_TEXT,
+                      cursor: "pointer",
+                      fontSize: 14,
+                      lineHeight: 1,
+                      padding: "0 4px",
+                    }}
+                    title="Delete chat"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             </div>
-          ))}
-          {messages.length === 0 && (
-            <div style={{ color: "#666", fontSize: 14 }}>
-              Ask about production readiness, manufacturing plans, maturity
-              gates, Jama usage patterns, etc.
-            </div>
-          )}
-        </div>
-
-        {/* Input area */}
-        <div
-          style={{
-            borderTop: "1px solid #ddd",
-            padding: 8,
-            background: "#ffffff",
-          }}
-        >
-          <div style={{ display: "flex", gap: 8 }}>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask a question..."
-              style={{
-                flex: 1,
-                resize: "none",
-                height: 60,
-                fontSize: 14,
-                padding: 8,
-              }}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={loading || !API_URL || !activeSession}
-              style={{
-                minWidth: 80,
-                padding: "0 12px",
-                borderRadius: 4,
-                border: "none",
-                background: THEME_DARK,
-                color: "white",
-                fontWeight: 600,
-                cursor: loading ? "default" : "pointer",
-                opacity: loading || !API_URL || !activeSession ? 0.7 : 1,
-              }}
-            >
-              {loading ? "..." : "Send"}
-            </button>
-          </div>
-          {!API_URL && (
-            <div style={{ marginTop: 4, fontSize: 12, color: "red" }}>
-              REACT_APP_API_URL is not set.
-            </div>
-          )}
-        </div>
+          );
+        })}
       </div>
     </div>
-  );
+
+    {/* RIGHT MAIN PANE: header + messages + input */}
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        background: "#f5f7fb",
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          padding: "8px 16px",
+          borderBottom: "1px solid rgba(0,0,0,0.1)",
+          background: THEME_BG,
+          color: THEME_TEXT,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <img
+            src={logo}
+            alt="Radia logo"
+            style={{ height: 30, width: "auto" }}
+          />
+          <div>
+            <h2 style={{ margin: 0, fontSize: 18 }}>
+              Radia SEI / Production Assistant
+            </h2>
+            <div style={{ fontSize: 12, opacity: 0.9 }}>
+              Answers from your prompt flow + AI Search. Internal use only.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat area */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: 16,
+        }}
+      >
+        {messages.map((m) => (
+          <div
+            key={m.id}
+            style={{
+              display: "flex",
+              justifyContent: m.role === "user" ? "flex-end" : "flex-start",
+              marginBottom: 8,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "70%",
+                padding: 10,
+                borderRadius: 10,
+                background: m.role === "user" ? THEME_DARK : "#ffffff",
+                color: m.role === "user" ? "#ffffff" : "#000000",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+                fontSize: 14,
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {m.text}
+            </div>
+          </div>
+        ))}
+        {messages.length === 0 && (
+          <div style={{ color: "#555", fontSize: 14 }}>
+            Ask about production readiness, manufacturing plans, maturity gates,
+            Jama usage patterns, etc.
+          </div>
+        )}
+      </div>
+
+      {/* Input area */}
+      <div
+        style={{
+          borderTop: "1px solid rgba(0,0,0,0.1)",
+          padding: 8,
+          background: "#ffffff",
+        }}
+      >
+        <div style={{ display: "flex", gap: 8 }}>
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask a question..."
+            style={{
+              flex: 1,
+              resize: "none",
+              height: 60,
+              fontSize: 14,
+              padding: 8,
+              borderRadius: 6,
+              border: "1px solid #ccc",
+            }}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={loading || !API_URL || !activeSession}
+            style={{
+              minWidth: 80,
+              padding: "0 16px",
+              borderRadius: 6,
+              border: "none",
+              background: THEME_DARK,
+              color: "white",
+              fontWeight: 600,
+              cursor: loading ? "default" : "pointer",
+              opacity: loading || !API_URL || !activeSession ? 0.7 : 1,
+            }}
+          >
+            {loading ? "..." : "Send"}
+          </button>
+        </div>
+        {!API_URL && (
+          <div style={{ marginTop: 4, fontSize: 12, color: "red" }}>
+            REACT_APP_API_URL is not set.
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
 }
 
 export default App;
