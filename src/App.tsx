@@ -310,9 +310,9 @@ return (
           <img
             src={logo}
             alt="Radia logo"
-            style={{ height: 26, width: "auto" }}
+            style={{ height: 32, width: "auto" }}
           />
-          <span style={{ fontWeight: 600, fontSize: 14 }}>
+          <span style={{ fontWeight: 600, fontSize: 24 }}>
             RadiAI
           </span>
         </div>
@@ -450,7 +450,7 @@ return (
           <img
             src={logo}
             alt="Radia logo"
-            style={{ height: 30, width: "auto" }}
+            style={{ height: 36, width: "auto" }}
           />
           <div>
             <h2 style={{ margin: 0, fontSize: 18 }}>
@@ -488,7 +488,7 @@ return (
                 background: m.role === "user" ? THEME_DARK : "#ffffff",
                 color: m.role === "user" ? "#ffffff" : "#000000",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
-                fontSize: 11,
+                fontSize: 12,
                 whiteSpace: "pre-wrap",
               }}
             >
