@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import logo from "./assets/radia-logo.png";
 
 interface Message {
   id: string;
@@ -52,6 +53,11 @@ function stripCitations(raw: string): string {
   }
   return raw.trim();
 }
+
+// Theme colors
+const THEME_BG = "rgb(193, 207, 220)"; // Radia branding color
+const THEME_TEXT = "#ffffff"; // white text on theme backgrounds
+const THEME_DARK = "#23405a"; // darker accent for buttons / user bubble
 
 function App() {
   // Sessions (multiple chats)
@@ -251,8 +257,10 @@ function App() {
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         height: "100vh",
-        fontFamily: "Segoe UI, system-ui, sans-serif",
+        fontFamily: "FK Gretesk, FK Gretesk Medium, FK Gretesk black",
+        background: THEME_BG, // theme background
       }}
     >
       {/* Sidebar: chat sessions */}
@@ -352,15 +360,29 @@ function App() {
         <div
           style={{
             padding: "8px 16px",
-            borderBottom: "1px solid #ddd",
-            background: "#ffffff",
+            borderBottom: "1px solid rgba(0,0,0,0.1)",
+            background: THEME_BG,
+            color: THEME_TEXT,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 18 }}>
-            Radia SEI / Production Assistant
-          </h2>
-          <div style={{ fontSize: 12, color: "#666" }}>
-            Answers from your prompt flow + AI Search. Internal use only.
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <img
+              src={logo}
+              alt="Radia logo"
+              style={{ height: 30, width: "auto" }}
+            />
+            <div>
+              <h2 style={{ margin: 0, fontSize: 18 }}>
+                Radia SE&I Assistant
+              </h2>
+              <div style={{ fontSize: 12, opacity: 0.9 }}>
+                Answers from SE&I process docs. Internal use only.
+              </div>
+            </div>
           </div>
         </div>
 
@@ -370,7 +392,7 @@ function App() {
             flex: 1,
             overflowY: "auto",
             padding: 16,
-            background: "#f5f5f5",
+            background: "#f5f7fb",
           }}
         >
           {messages.map((m) => (
@@ -387,7 +409,7 @@ function App() {
                   maxWidth: "70%",
                   padding: 8,
                   borderRadius: 8,
-                  background: m.role === "user" ? "#0078d4" : "#ffffff",
+                  background: m.role === "user" ? THEME_DARK : "#ffffff",
                   color: m.role === "user" ? "#ffffff" : "#000000",
                   boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
                   fontSize: 14,
@@ -436,7 +458,7 @@ function App() {
                 padding: "0 12px",
                 borderRadius: 4,
                 border: "none",
-                background: "#0078d4",
+                background: THEME_DARK,
                 color: "white",
                 fontWeight: 600,
                 cursor: loading ? "default" : "pointer",
