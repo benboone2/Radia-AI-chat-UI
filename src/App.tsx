@@ -280,7 +280,7 @@ return (
     style={{
       display: "flex",
       height: "100vh",
-      fontFamily: "Segoe UI, system-ui, sans-serif",
+      fontFamily: "FK grotesk, FK grotesk Medium, FK grotesk black italic",
       background: THEME_BG,
     }}
   >
