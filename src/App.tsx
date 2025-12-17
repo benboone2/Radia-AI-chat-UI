@@ -312,7 +312,7 @@ return (
           <img
             src={logo}
             alt="Radia logo"
-            style={{ height: 32, width: "auto" }}
+            style={{ height: 45, width: "auto" }}
           />
           <span style={{ fontWeight: 600, fontSize: 24 }}>
             RadiAI
@@ -449,11 +449,6 @@ return (
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img
-            src={logo}
-            alt="Radia logo"
-            style={{ height: 36, width: "auto" }}
-          />
           <div>
             <h2 style={{ margin: 0, fontSize: 18 }}>
               Radia SE&I AI Assistant
