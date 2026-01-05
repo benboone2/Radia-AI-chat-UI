@@ -376,7 +376,7 @@ return (
                 marginBottom: 4,
                 borderRadius: 4,
                 background: isActive
-                  ? "rgba(35,64,90,0.3)"
+                  ? "rgba(31, 43, 54, 0.3)"
                   : "rgba(0,0,0,0.05)",
               }}
             >
