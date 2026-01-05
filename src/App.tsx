@@ -499,7 +499,7 @@ return (
               Radia SE&I AI Assistant
             </h2>
             <div style={{ fontSize: 12, opacity: 0.9 }}>
-              Answers from your process documents + GPT 4.1. Internal use only.
+              Answers from your process documents + GPT 5.2. Internal use only.
             </div>
           </div>
         </div>
