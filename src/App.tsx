@@ -377,7 +377,7 @@ return (
                 borderRadius: 4,
                 background: isActive
                   ? "rgba(31, 43, 54, 0.3)"
-                  : "rgba(0,0,0,0.05)",
+                  : "rgba(0, 0, 0, 0.68)",
               }}
             >
               <div
