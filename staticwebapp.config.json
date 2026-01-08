@@ -1,17 +1,20 @@
 {
-  "navigationFallback": {
-    "rewrite": "/index.html"
-  },
+  "navigationFallback": { "rewrite": "/index.html" },
   "routes": [
-    {
-      "route": "/*",
-      "allowedRoles": ["authenticated"]
-    }
+    { "route": "/*", "allowedRoles": ["authenticated"] }
   ],
   "responseOverrides": {
-    "401": {
-      "statusCode": 302,
-      "redirect": "/.auth/login/aad"
+    "401": { "statusCode": 302, "redirect": "/.auth/login/aad" }
+  },
+  "auth": {
+    "identityProviders": {
+      "azureActiveDirectory": {
+        "registration": {
+          "openIdIssuer": "https://login.microsoftonline.com/<RADIA_TENANT_ID>/v2.0",
+          "clientIdSettingName": "AZURE_CLIENT_ID",
+          "clientSecretSettingName": "AZURE_CLIENT_SECRET_APP_SETTING_NAME"
+        }
+      }
     }
   }
 }
