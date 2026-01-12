@@ -586,7 +586,7 @@ return (
         ))}
         {messages.length === 0 && (
           <div style={{ color: "#555", fontSize: 14 }}>
-            Ask me anything about Radia SE&I processes or let's create a training module.
+            Ask me anything about Radia SE&I processes or ask to create a training module based on existing documentation.
           </div>
         )}
       </div>
