@@ -10,7 +10,7 @@
     "identityProviders": {
       "azureActiveDirectory": {
         "registration": {
-          "openIdIssuer": "https://login.microsoftonline.com/<RADIA_TENANT_ID>/v2.0",
+          "openIdIssuer": "https://login.microsoftonline.com/radia99/v2.0",
           "clientIdSettingName": "AZURE_CLIENT_ID",
           "clientSecretSettingName": "AZURE_CLIENT_SECRET_APP_SETTING_NAME"
         }
