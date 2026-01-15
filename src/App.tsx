@@ -651,7 +651,7 @@ return (
                 src={logo}
                 alt="Radia thinking"
                 className="radia-logo-spin"
-                style={{ height: 20, width: "auto" }}
+                style={{ height: 32, width: "auto" }}
               />
             ) : (
               "Send"
