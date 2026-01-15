@@ -175,6 +175,14 @@ function App() {
   };
 
   const deleteSession = (id: string) => {
+    // Confirmation step
+    const ok = window.confirm(
+      "Are you sure you want to delete this chat? This cannot be undone."
+    );
+    if (!ok) {
+      return; // user canceled
+    }
+
     setSessions((prev) => {
       // Don’t allow deleting the last remaining chat
       if (prev.length <= 1) {
