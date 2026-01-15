@@ -44,6 +44,10 @@ function buildChatHistory(messages: Message[]): ChatTurn[] {
 
 const API_URL = process.env.REACT_APP_API_URL ?? "";
 
+const DOC_URL =
+  process.env.REACT_APP_DOC_URL ??
+  "https://radiainc.atlassian.net/wiki/spaces/SEI/pages/751140865/AI+Tool+Training+Usage+Guide";
+
 function stripCitations(raw: string): string {
   // Optional helper to cut off the "Citations" section
   const tokens = ["\n\nCitations", "\nCitations", "\n\nSources", "\nSources"];
@@ -633,11 +637,40 @@ return (
             {loading ? "..." : "Send"}
           </button>
         </div>
-        {!API_URL && (
-          <div style={{ marginTop: 4, fontSize: 12, color: "red" }}>
-            REACT_APP_API_URL is not set.
+
+        {/* Bottom-left reference link */}
+        <div
+          style={{
+            marginTop: 4,
+            fontSize: 11,
+            color: "#666",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <a
+              href={DOC_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: "#555",
+                textDecoration: "underline",
+                fontWeight: 500,
+              }}
+            >
+              Usage notes & data policy
+            </a>
           </div>
-        )}
+
+          {/* Keep API warning on the right if needed */}
+          {!API_URL && (
+            <div style={{ fontSize: 11, color: "red" }}>
+              REACT_APP_API_URL is not set.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   </div>
