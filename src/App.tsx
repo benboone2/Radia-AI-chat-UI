@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import logo from "./assets/radia-logo.png";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import "./App.css";
 
 interface Message {
   id: string;
@@ -640,9 +641,21 @@ return (
               fontWeight: 600,
               cursor: loading ? "default" : "pointer",
               opacity: loading || !API_URL || !activeSession ? 0.7 : 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {loading ? "..." : "Send"}
+            {loading ? (
+              <img
+                src={logo}
+                alt="Radia thinking"
+                className="radia-logo-spin"
+                style={{ height: 20, width: "auto" }}
+              />
+            ) : (
+              "Send"
+            )}
           </button>
         </div>
 

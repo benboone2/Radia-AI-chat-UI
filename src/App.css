@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+/* Spinning Radia logo for "thinking" state */
+.radia-logo-spin {
+  animation: radia-logo-spin 0.9s linear infinite;
+}
+
+@keyframes radia-logo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
