@@ -43,6 +43,25 @@ function buildChatHistory(messages: Message[]): ChatTurn[] {
   return history;
 }
 
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    // Fallback for older browsers / blocked clipboard API
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "true");
+    ta.style.position = "absolute";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  }
+}
+
 const API_URL = process.env.REACT_APP_API_URL ?? "";
 
 const DOC_URL =
@@ -103,6 +122,30 @@ function App() {
     }
     return null;
   });
+  
+  const [copiedMsgId, setCopiedMsgId] = useState<string | null>(null);
+
+  const onCopy = async (id: string, text: string) => {
+    // Prefer Clipboard API, fall back if blocked
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "true");
+      ta.style.position = "absolute";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+
+    setCopiedMsgId(id);
+    window.setTimeout(() => {
+      setCopiedMsgId((cur) => (cur === id ? null : cur));
+    }, 1200);
+  };
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -546,8 +589,32 @@ return (
                 fontSize: 14,
                 // Let markdown control layout for assistant, keep pre-wrap for user text
                 whiteSpace: m.role === "user" ? "pre-wrap" : "normal",
+                position: "relative", // <-- needed for top-right button placement
               }}
             >
+              {m.role === "assistant" && (
+                <button
+                  type="button"
+                  onClick={() => onCopy(m.id, m.text ?? "")}
+                  aria-label="Copy output"
+                  title="Copy output"
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    padding: "4px 8px",
+                    fontSize: 12,
+                    borderRadius: 8,
+                    border: "1px solid rgba(0,0,0,0.2)",
+                    background: "rgba(255,255,255,0.8)",
+                    color: "#000",
+                    cursor: "pointer",
+                  }}
+                >
+                  {copiedMsgId === m.id ? "Copied" : "Copy"}
+                </button>
+              )}
+
               {m.role === "assistant" ? (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
@@ -578,13 +645,19 @@ return (
                       </ol>
                     ),
                     h1: ({ children }) => (
-                      <h1 style={{ margin: "0 0 6px 0", fontSize: 18 }}>{children}</h1>
+                      <h1 style={{ margin: "0 0 6px 0", fontSize: 18 }}>
+                        {children}
+                      </h1>
                     ),
                     h2: ({ children }) => (
-                      <h2 style={{ margin: "0 0 6px 0", fontSize: 16 }}>{children}</h2>
+                      <h2 style={{ margin: "0 0 6px 0", fontSize: 16 }}>
+                        {children}
+                      </h2>
                     ),
                     h3: ({ children }) => (
-                      <h3 style={{ margin: "0 0 4px 0", fontSize: 15 }}>{children}</h3>
+                      <h3 style={{ margin: "0 0 4px 0", fontSize: 15 }}>
+                        {children}
+                      </h3>
                     ),
                   }}
                 >
