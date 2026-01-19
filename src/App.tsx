@@ -126,20 +126,8 @@ function App() {
   const [copiedMsgId, setCopiedMsgId] = useState<string | null>(null);
 
   const onCopy = async (id: string, text: string) => {
-    // Prefer Clipboard API, fall back if blocked
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly", "true");
-      ta.style.position = "absolute";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    }
+    const ok = await copyToClipboard(text);
+    if (!ok) return;
 
     setCopiedMsgId(id);
     window.setTimeout(() => {
