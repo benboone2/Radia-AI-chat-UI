@@ -64,6 +64,7 @@ async function copyToClipboard(text: string) {
 
 const API_URL = process.env.REACT_APP_API_URL ?? "";
 
+
 const DOC_URL =
   process.env.REACT_APP_DOC_URL ??
   "https://radiainc.atlassian.net/wiki/spaces/SEI/pages/751140865/AI+Tool+Training+Usage+Guide";
