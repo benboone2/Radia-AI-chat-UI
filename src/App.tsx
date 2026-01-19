@@ -43,6 +43,38 @@ function buildChatHistory(messages: Message[]): ChatTurn[] {
   return history;
 }
 
+function classifyFetchError(err: any) {
+  // Default: generic network failure
+  let userMessage = "Network error: couldn't reach the server.";
+  let kind = "network_error";
+
+  // AbortController / browser abort
+  if (err?.name === "AbortError") {
+    userMessage = "Request timed out or was canceled. Please try again.";
+    kind = "aborted";
+    return { userMessage, kind };
+  }
+
+  // The most common fetch failure in Chromium for CORS/DNS/TLS/etc.
+  const msg = typeof err?.message === "string" ? err.message : "";
+  if (msg.toLowerCase().includes("failed to fetch")) {
+    userMessage =
+      "Network error: request failed (possible CORS/auth/proxy issue). Please try again.";
+    kind = "failed_to_fetch";
+    return { userMessage, kind };
+  }
+
+  // Edge/Chromium sometimes expose a nested 'cause'
+  const causeMsg =
+    typeof err?.cause?.message === "string" ? err.cause.message : "";
+  if (causeMsg) {
+    userMessage = `Network error: ${causeMsg}`;
+    kind = "network_error_with_cause";
+  }
+
+  return { userMessage, kind };
+}
+
 async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
@@ -298,7 +330,27 @@ function App() {
         return;
       }
 
-      const data = await resp.json();
+      let data: any;
+      try {
+        data = await resp.json();
+      } catch (e) {
+        // If the server returned HTML/text (common for gateway errors), surface it cleanly
+        const text = await resp.text().catch(() => "");
+        const errMsg: Message = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          text: `Server returned a non-JSON response. Status ${resp.status}. ${text.slice(0, 200)}`,
+        };
+
+        setSessions((prev) =>
+          prev.map((s) =>
+            s.id === activeSession.id
+              ? { ...s, messages: [...s.messages, errMsg] }
+              : s
+          )
+        );
+        return;
+      }
 
       const rawAnswer: string =
         data.answer !== undefined ? String(data.answer) : JSON.stringify(data);
@@ -316,12 +368,16 @@ function App() {
             : s
         )
       );
-    } catch (err) {
-      console.error("Error calling API:", err);
+    } catch (err: any) {
+      const errorId = crypto.randomUUID().slice(0, 8); // short correlation id
+      const { userMessage, kind } = classifyFetchError(err);
+
+      console.error(`[chat][${errorId}] Error calling API (${kind}):`, err);
+
       const errMsg: Message = {
         id: crypto.randomUUID(),
         role: "assistant",
-        text: "Sorry, I couldn't reach the server.",
+        text: `${userMessage} (Error ID: ${errorId})`,
       };
       setSessions((prev) =>
         prev.map((s) =>
@@ -589,10 +645,10 @@ return (
                   title="Copy output"
                   style={{
                     position: "absolute",
-                    top: 8,
-                    right: 8,
-                    padding: "4px 8px",
-                    fontSize: 12,
+                    top: 4,
+                    right: 4,
+                    padding: "2px 4px",
+                    fontSize: 6,
                     borderRadius: 8,
                     border: "1px solid rgba(0,0,0,0.2)",
                     background: "rgba(255,255,255,0.8)",
